@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+        body {
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 50;
+        }
+
+        .calculator {
+            width: 700px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            background-color: #fff;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            height: 40px;
+            font-size: 18px;
+            margin-bottom: 10px;
+            text-align: right;
+        }
+
+        /* تنسيق الأزرار */
+        input[type="button"] {
+            width: 80px; /* زيادة العرض */
+            height: 80px; /* زيادة الارتفاع */
+            font-size: 24px; /* زيادة حجم الخط */
+            margin: 5px; /* تباعد بين الأزرار */
+            border: none;
+            background-color: #f4f4f4;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: #333;
+        }
+
+        /* تغيير لون الخلفية عند تمرير الماوس */
+        input[type="button"]:hover {
+            background-color: #d4d4d4;
+        }
+
+        /* تغيير لون الأرقام والعمليات */
+        input[type="button"][value="="] {
+            background-color: #3A8FF1; /* لون خلفية زر النتيجة */
+            color: #fff; /* لون النص في زر النتيجة */
+        }
+
+        input[type="button"][value="C"] {
+            background-color: #A20202; /* لون خلفية زر مسح */
+            color: #fff; /* لون النص في زر مسح */
+        }
+
+        /* تغيير خصائص زر Backspace */
+        input[type="button"][value="⌫"] {
+            width: 180px; /* زيادة العرض */
+            height: 81px; /* زيادة الارتفاع */
+            font-size: 35px; /* زيادة حجم الخط */
+            background-color: #E64D3B; /* لون خلفية زر مسح */
+            color: #fff; /* لون النص في زر مسح */
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" id="display" readonly tabindex="0" onkeydown="handleKeyboardInput(event)">
+        <!-- Row 1 -->
+
+        <input type="button" value="7" onclick="addToDisplay('7')">
+        <input type="button" value="8" onclick="addToDisplay('8')">
+        <input type="button" value="9" onclick="addToDisplay('9')">
+        <input type="button" value="/" onclick="addToDisplay('/')">
+        <!-- Row 2 -->
+        <input type="button" value="4" onclick="addToDisplay('4')">
+
+        <input type="button" value="5" onclick="addToDisplay('5')">
+        <input type="button" value="C" onclick="clearDisplay()">
+
+        <input type="button" value="6" onclick="addToDisplay('6')">
+        <input type="button" value="*" onclick="addToDisplay('*')">
+        <!-- Row 3 -->
+        <input type="button" value="1" onclick="addToDisplay('1')">
+        <input type="button" value="2" onclick="addToDisplay('2')">
+        <input type="button" value="3" onclick="addToDisplay('3')">
+        <input type="button" value="-" onclick="addToDisplay('-')">
+        <!-- Row 4 -->
+              <input type="button" value="=" onclick="calculate()">
+
+        <input type="button" value="0" onclick="addToDisplay('0')">
+        <input type="button" value="+" onclick="addToDisplay('+')">
+        <!-- Additional features -->
+        <input type="button" value="." onclick="addToDisplay('.')">
+        <input type="button" value="%" onclick="addPercentage()">
+        <input type="button" value="√" onclick="calculateSquareRoot()">
+        <input type="button" value="x^2" onclick="calculateSquared()">
+        <input type="button" value="x^3" onclick="calculateCubed()">
+        <input type="button" value="1/x" onclick="calculateReciprocal()">
+        <input type="button" value="±" onclick="changeSign()">
+        <input type="button" value="(" onclick="addToDisplay('(')">
+        <input type="button" value=")" onclick="addToDisplay(')')">
+        <input type="button" value="∛" onclick="calculateCubicRoot()">
+        <input type="button" value="x^y" onclick="addExponent()">
+        <input type="button" value="log" onclick="calculateLog()">
+        <input type="button" value="ln" onclick="calculateNaturalLog()">
+        <input type="button" value="sin" onclick="calculateSine()">
+        <input type="button" value="cos" onclick="calculateCosine()">
+        <input type="button" value="tan" onclick="calculateTangent()">
+        <input type="button" value="π" onclick="addToDisplay(Math.PI)">
+        <!-- Backspace (Partial Clear) Button -->
+        <input type="button" value="⌫" onclick="backspace()">
+    </div>
+  <script>
+        // Function to add a value to the display
+        function addToDisplay(value) {
+            document.getElementById('display').value += value;
+        }
+
+        // Function to handle keyboard input
+        function handleKeyboardInput(event) {
+            const key = event.key;
+            // Check if the pressed key is Backspace
+            if (key === "Backspace") {
+                backspace();
+            }
+        }
+
+        // Function to clear the display
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+
+        // Function to perform backspace (partial clear)
+        function backspace() {
+            const display = document.getElementById('display');
+            display.value = display.value.slice(0, -1);
+        }
+
+        // Function to evaluate the expression
+        function calculate() {
+            const display = document.getElementById('display').value;
+            try {
+                let result = display;
+                result = result.replace(/%/g, '/100');
+                result = eval(result);
+                document.getElementById('display').value = result;
+            } catch (error) {
+                document.getElementById('display').value = 'Error';
+            }
+        }
+
+        // Function to add a percentage
+        function addPercentage() {
+            const display = document.getElementById('display');
+            display.value = `${parseFloat(display.value) / 100}`;
+        }
+
+        // Function to calculate the square root
+        function calculateSquareRoot() {
+            const display = document.getElementById('display');
+            display.value = Math.sqrt(parseFloat(display.value));
+        }
+
+        // Function to calculate the square of a number
+        function calculateSquared() {
+            const display = document.getElementById('display');
+            display.value = parseFloat(display.value) * parseFloat(display.value);
+        }
+
+        // Function to calculate the cube of a number
+        function calculateCubed() {
+            const display = document.getElementById('display');
+            display.value = Math.pow(parseFloat(display.value), 3);
+        }
+
+        // Function to calculate the reciprocal
+        function calculateReciprocal() {
+            const display = document.getElementById('display');
+            const value = parseFloat(display.value);
+            if (value !== 0) {
+                display.value = 1 / value;
+            } else {
+                display.value = 'Error';
+            }
+        }
+
+        // Function to change the sign of a number
+        function changeSign() {
+            const display = document.getElementById('display');
+            display.value = -parseFloat(display.value);
+        }
+
+        // Function to calculate the cubic root
+        function calculateCubicRoot() {
+            const display = document.getElementById('display');
+            display.value = Math.cbrt(parseFloat(display.value));
+        }
+
+        // Function to add an exponent
+        function addExponent() {
+            const display = document.getElementById('display');
+            display.value += "^";
+        }
+
+        // Function to calculate logarithm
+        function calculateLog() {
+            const display = document.getElementById('display');
+            display.value = Math.log10(parseFloat(display.value));
+        }
+
+        // Function to calculate natural logarithm
+        function calculateNaturalLog() {
+            const display = document.getElementById('display');
+            const value = parseFloat(display.value);
+            if (value > 0) {
+                display.value = Math.log(value);
+            } else {
+                display.value = 'Error';
+            }
+        }
+function handleKeyboardInput(event) {
+    const key = event.key;
+    if (key === "Backspace") {
+        backspace();
+    } else if (key.match(/[0-9+\-*/()%.^=]|Enter/)) {
+        // تحقق مما إذا كانت المفتاح تعادل "=" أو "Enter" وقم بحساب النتيجة
+        if (key === "=" || key === "Enter") {
+            calculate();
+        } else {
+            // إضافة القيم والعمليات الرياضية إلى الشاشة
+            addToDisplay(key);
+        }
+    }
+}
+// Function to handle key press events
+function handleKeyPress(event) {
+    let key = event.key;
+    if (key.match(/[0-9+\-*/=()%.^Cπ]|Enter/)) {
+        if (key === 'Enter') {
+            key = '=';
+        }
+        addToDisplay(key);
+    }
+}
+
+// Attach the key press event handler to the document
+document.addEventListener('keypress', handleKeyPress);
+
+        // Function to calculate sine
+        function calculateSine() {
+            const display = document.getElementById('display');
+            display.value = Math.sin(parseFloat(display.value));
+        }
+
+        // Function to calculate cosine
+        function calculateCosine() {
+            const display = document.getElementById('display');
+            display.value = Math.cos(parseFloat(display.value));
+        }
+
+        // Function to calculate tangent
+        function calculateTangent() {
+            const display = document.getElementById('display');
+            display.value = Math.tan(parseFloat(display.value));
+        }
+        // Function to add a value to the display
+        function addToDisplay(value) {
+            document.getElementById('display').value += value;
+        }
+
+        // Function to handle keyboard input
+        function handleKeyboardInput(event) {
+            const key = event.key;
+            // Check if the pressed key is Backspace
+            if (key === "Backspace") {
+                backspace();
+            }
+        }
+
+        // Function to clear the display
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+
+        // Function to perform backspace (partial clear)
+        function backspace() {
+            const display = document.getElementById('display');
+            display.value = display.value.slice(0, -1);
+        }
+
+        // Function to evaluate the expression
+        function calculate() {
+            const display = document.getElementById('display').value;
+            try {
+                let result = display;
+                result = result.replace(/%/g, '/100');
+                result = eval(result);
+                document.getElementById('display').value = result;
+            } catch (error) {
+                document.getElementById('display').value = 'Error';
+            }
+        }
+
+        // Function to add a value to the display
+        function addToDisplay(value) {
+            document.getElementById('display').value += value;
+        }
+
+        // Function to handle key press events
+        function handleKeyPress(event) {
+            let key = event.key;
+            if (key.match(/[0-9+\-*/=()%.^Cπ]|Enter/)) {
+                if (key === 'Enter') {
+                    key = '=';
+                }
+                addToDisplay(key);
+            }
+        }
+
+        // Function to clear the display
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+
+        // Function to evaluate the expression
+        function calculate() {
+            const display = document.getElementById('display').value;
+            try {
+                let result = display;
+                result = result.replace(/%/g, '/100');
+                result = eval(result);
+                document.getElementById('display').value = result;
+            } catch (error) {
+                document.getElementById('display').value = 'Error';
+            }
+        }
+
+        // Function to add a percentage
+        function addPercentage() {
+            const display = document.getElementById('display');
+            display.value = `${parseFloat(display.value) / 100}`;
+        }
+
+        // Function to calculate the square root
+        function calculateSquareRoot() {
+            const display = document.getElementById('display');
+            display.value = Math.sqrt(parseFloat(display.value));
+        }
+
+        // Function to calculate the square of a number
+        function calculateSquared() {
+            const display = document.getElementById('display');
+            display.value = parseFloat(display.value) * parseFloat(display.value);
+        }
+
+        // Function to calculate the cube of a number
+        function calculateCubed() {
+            const display = document.getElementById('display');
+            display.value = Math.pow(parseFloat(display.value), 3);
+        }
+
+        // Function to calculate the reciprocal
+        function calculateReciprocal() {
+            const display = document.getElementById('display');
+            const value = parseFloat(display.value);
+            if (value !== 0) {
+                display.value = 1 / value;
+            } else {
+                display.value = 'Error';
+            }
+        }
+
+        // Function to change the sign of a number
+        function changeSign() {
+            const display = document.getElementById('display');
+            display.value = -parseFloat(display.value);
+        }
+
+        // Function to calculate the cubic root
+        function calculateCubicRoot() {
+            const display = document.getElementById('display');
+            display.value = Math.cbrt(parseFloat(display.value));
+        }
+
+        // Function to add an exponent
+        function addExponent() {
+            const display = document.getElementById('display');
+            display.value += "^";
+        }
+
+        // Function to calculate logarithm
+        function calculateLog() {
+            const display = document.getElementById('display');
+            display.value = Math.log10(parseFloat(display.value));
+        }
+
+        // Function to calculate natural logarithm
+        function calculateNaturalLog() {
+            const display = document.getElementById('display');
+            const value = parseFloat(display.value);
+            if (value > 0) {
+                display.value = Math.log(value);
+            } else {
+                display.value = 'Error';
+            }
+        }
+
+        // Function to calculate sine
+        function calculateSine() {
+            const display = document.getElementById('display');
+            display.value = Math.sin(parseFloat(display.value));
+        }
+
+        // Function to calculate cosine
+        function calculateCosine() {
+            const display = document.getElementById('display');
+            display.value = Math.cos(parseFloat(display.value));
+        }
+
+        // Function to calculate tangent
+        function calculateTangent() {
+            const display = document.getElementById('display');
+            display.value = Math.tan(parseFloat(display.value));
+        }
+    </script>
+</body>
+</html>
